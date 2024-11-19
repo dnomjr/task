@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product flags</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .flag {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .flag-action {
+            background-color: #ff5722;
+        }
+
+        .flag-free-shipping {
+            background-color: #4caf50;
+        }
+
+        .flag-discount {
+            background-color: #2196f3;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="product" v-for="(product, index) in products" :key="index">
+            <h2>{{ product.name || Product }}</h2>
+
+            <span v-if="product.attributes?.flags?.includes('action')" class="flag flag-action">
+                Action
+            </span>
+
+            <span v-if="product.attributes?.free_shipping" class="flag flag-free-shipping">
+                Free Shipping
+            </span>
+
+            <span
+                v-if="isNumber(product.attributes?.price_old_amount) && isNumber(product.attributes?.price_amount) && product.attributes?.price_old_amount > product.attributes?.price_amount"
+                class="flag flag-discount">
+                Discount {{ calculateDiscount(product.attributes.price_old_amount, product.attributes.price_amount) }}%
+            </span>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    products: [
+                        {
+                            "name": "Shirt1",
+                            "attributes": {
+                                "flags": ["action"],
+                                "free_shipping": true,
+                                "price_amount": 453,
+                                "price_old_amount": 894,
+                            }
+                        },
+                        {
+                            "name": "Shirt2",
+                            "attributes": {
+                                "flags": [],
+                                "free_shipping": true,
+                                "price_amount": 100,
+                                "price_old_amount": 50,
+                            }
+                        },
+                        {
+                            "name": "Shirt3",
+                            "attributes": {
+                                "flags": ["action", "bestseller"],
+                                "free_shipping": false,
+                                "price_amount": 783,
+                                "price_old_amount": 1905,
+                            }
+                        },
+                    ],
+                };
+            },
+            methods: {
+                calculateDiscount(oldPrice, currentPrice) {
+                    const discount = ((oldPrice - currentPrice) / oldPrice) * 100
+                    return Math.round(discount)
+                },
+
+                isNumber(value) {
+                    return typeof value === 'number' && !isNaN(value);
+                },
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
